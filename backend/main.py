@@ -9,12 +9,14 @@ Entry point for the backend server. Provides API endpoints for:
 import json
 import logging
 import uuid
+from pathlib import Path
 from typing import Optional
 
 import httpx
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import PlainTextResponse, JSONResponse
+from fastapi.responses import PlainTextResponse, JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 import config
@@ -275,6 +277,20 @@ async def health():
         "model": status["model"],
         "api_key_configured": status["api_key_configured"],
     }
+
+
+# --- Serve Frontend ---
+FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+
+@app.get("/")
+async def serve_index():
+    """Serve the student chat interface."""
+    return FileResponse(FRONTEND_DIR / "index.html")
+
+@app.get("/admin")
+async def serve_admin():
+    """Serve the researcher dashboard."""
+    return FileResponse(FRONTEND_DIR / "admin.html")
 
 
 # --- Run ---
