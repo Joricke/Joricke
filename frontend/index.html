@@ -348,6 +348,22 @@
         document.getElementById("studentId").addEventListener("keydown", function(e) {
             if (e.key === "Enter") startChat();
         });
+
+        // Auto-fill from URL parameters (for Moodle iframe integration)
+        (function() {
+            var params = new URLSearchParams(window.location.search);
+            var sid = params.get("student_id");
+            var tid = params.get("task_id");
+            var autoStart = params.get("autostart");
+
+            if (sid) document.getElementById("studentId").value = sid;
+            if (tid) document.getElementById("taskId").value = tid;
+
+            // Auto-start if all required fields are provided
+            if (sid && autoStart === "true") {
+                setTimeout(startChat, 100);
+            }
+        })();
     </script>
 </body>
 </html>
